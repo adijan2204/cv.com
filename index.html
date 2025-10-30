@@ -1,0 +1,871 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Personal Portfolio — Intro + Explore</title>
+  <meta name="description" content="Artist • Writer • Developer • Consultant — Personal Portfolio" />
+  <!-- Tailwind Play CDN for quick prototype -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Enhanced theme tokens */
+    :root{
+      --bg:#0f172a; /* slate-900 */
+      --muted: #94a3b8;
+      --accent:#e9970a; /* amber-500 */
+      --card:#0b1220;
+      --border-width: 1px; /* Customizable border width */
+    }
+    
+    /* Enhanced background with artistic elements */
+    body{ 
+      background: linear-gradient(135deg, #071029 0%, #0b1220 30%, #1a1035 70%, #071029 100%); 
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; 
+      color: #e6eef8;
+      position: relative;
+      overflow-x: hidden;
+    }
+    
+    /* Subtle animated background elements */
+    .bg-artist {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      opacity: 0.15;
+      pointer-events: none;
+    }
+    
+    .bg-paint-stroke {
+      position: absolute;
+      width: 300px;
+      height: 600px;
+      background: linear-gradient(45deg, transparent 30%, rgba(233, 151, 10, 0.1) 50%, transparent 70%);
+      border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+      animation: float 25s infinite linear;
+      filter: blur(15px);
+    }
+    
+    .bg-paint-stroke:nth-child(1) {
+      top: 10%;
+      left: 5%;
+      animation-delay: 0s;
+      background: linear-gradient(45deg, transparent 30%, rgba(0, 140, 255, 0.1) 50%, transparent 70%);
+    }
+    
+    .bg-paint-stroke:nth-child(2) {
+      top: 60%;
+      right: 10%;
+      animation-delay: -10s;
+      background: linear-gradient(45deg, transparent 30%, rgba(147, 51, 234, 0.1) 50%, transparent 70%);
+      width: 400px;
+      height: 400px;
+    }
+    
+    .bg-paint-stroke:nth-child(3) {
+      bottom: 20%;
+      left: 15%;
+      animation-delay: -5s;
+      background: linear-gradient(45deg, transparent 30%, rgba(233, 151, 10, 0.1) 50%, transparent 70%);
+      width: 350px;
+      height: 350px;
+    }
+    
+    .bg-code-pattern {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(15, 23, 42, 0.9) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(15, 23, 42, 0.9) 1px, transparent 1px);
+      background-size: 50px 50px;
+      opacity: 0.03;
+      z-index: -1;
+    }
+    
+    @keyframes float {
+      0% {
+        transform: translate(0, 0) rotate(0deg);
+      }
+      33% {
+        transform: translate(30px, -50px) rotate(120deg);
+      }
+      66% {
+        transform: translate(-20px, 20px) rotate(240deg);
+      }
+      100% {
+        transform: translate(0, 0) rotate(360deg);
+      }
+    }
+
+    /* Algerian font fallback – if you have Algerian installed it will show, otherwise serif fallback */
+    .algerian{ font-family: Algerian, "Cinzel", Georgia, serif; letter-spacing: 0.6px }
+
+    /* Fancy glass card */
+    .glass{ 
+      background: rgba(255,255,255,0.03); 
+      backdrop-filter: blur(6px); 
+      border: 1px solid rgba(255,255,255,0.04);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+
+    /* small transitions */
+    .trans{ transition: all .22s cubic-bezier(.2,.9,.2,1) }
+
+    /* scrollbar for comments */
+    .scrollbar{ max-height: 240px; overflow:auto }
+    .scrollbar::-webkit-scrollbar{ width: 8px }
+    .scrollbar::-webkit-scrollbar-thumb{ background: rgba(255,255,255,0.06); border-radius: 8px }
+    
+    /* Custom border width for role tags and other elements */
+    .role-btn, .filter-btn, .glass {
+      border-width: var(--border-width);
+    }
+    
+    /* Popup overlay */
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .popup-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .popup-content {
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+    }
+    
+    .popup-overlay.active .popup-content {
+      transform: scale(1);
+    }
+    
+    .close-popup {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    /* Glowing Effects */
+    .glow-button {
+      padding: 10px 20px;
+      text-transform: uppercase;
+      border-radius: 8px;
+      font-size: 17px;
+      font-weight: 500;
+      color: #ffffff80;
+      text-shadow: none;
+      background: transparent;
+      cursor: pointer;
+      box-shadow: transparent;
+      border: 1px solid #ffffff80;
+      transition: 0.5s ease;
+      user-select: none;
+    }
+
+    .glow-button:hover,
+    .glow-button:focus {
+      color: #ffffff;
+      background: #008cff;
+      border: 1px solid #008cff;
+      text-shadow: 0 0 5px #ffffff, 0 0 10px #ffffff, 0 0 20px #ffffff;
+      box-shadow: 0 0 5px #008cff, 0 0 20px #008cff, 0 0 50px #008cff, 0 0 100px #008cff;
+    }
+
+    .quote-glow {
+      cursor: pointer;
+      position: relative;
+      transition: all 0.5s ease;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      background: rgba(255, 255, 255, 0.02) !important;
+    }
+
+    .quote-glow:hover {
+      color: #ffffff;
+      background: rgba(0, 140, 255, 0.15) !important;
+      border: 1px solid #0004ff !important;
+      text-shadow: 0 0 8px #e93f06, 0 0 15px #d7f207, 0 0 25px #f50404;
+      box-shadow: 0 0 8px #008cff, 0 0 25px #013a69, 0 0 60px #008cff, 0 0 120px #023a68;
+      transform: translateY(-5px) scale(1.02);
+      border-left: 4px solid #0015ff !important;
+    }
+
+    /* Enhanced role buttons with glow effect */
+    .role-btn-glow {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 500;
+      color: #ffffff80;
+      text-shadow: none;
+      background: transparent;
+      cursor: pointer;
+      box-shadow: transparent;
+      border: 1px solid #ffffff80;
+      transition: 0.5s ease;
+      user-select: none;
+    }
+
+    .role-btn-glow:hover,
+    .role-btn-glow:focus {
+      color: #ffffff;
+      background: #e9970a;
+      border: 1px solid #e9970a;
+      text-shadow: 0 0 5px #ffffff, 0 0 10px #ffffff, 0 0 20px #ffffff;
+      box-shadow: 0 0 5px #e9970a, 0 0 20px #e9970a, 0 0 50px #e9970a, 0 0 100px #e9970a;
+    }
+
+    /* Social icons with glow */
+    .social-glow {
+      transition: all 0.5s ease;
+    }
+
+    .social-glow:hover {
+      color: #ffffff;
+      background: #00ff2a;
+      border: 1px solid #46cd10;
+      box-shadow: 0 0 5px #0bb524, 0 0 20px #03a348, 0 0 50px #09b31a, 0 0 100px #0aae2b;
+    }
+
+    /* Filter buttons with glow */
+    .filter-btn-glow {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #ffffff80;
+      text-shadow: none;
+      background: transparent;
+      cursor: pointer;
+      box-shadow: transparent;
+      border: 1px solid #ffffff80;
+      transition: 0.5s ease;
+      user-select: none;
+    }
+
+    .filter-btn-glow:hover,
+    .filter-btn-glow:focus {
+      color: #ffffff;
+      background: #47055c;
+      border: 1px solid #9107c7;
+      text-shadow: 0 0 5px #ffffff, 0 0 10px #ffffff, 0 0 20px #ffffff;
+      box-shadow: 0 0 5px #9500ff, 0 0 20px #ff00cc, 0 0 50px #e100ff, 0 0 100px #c505c2;
+    }
+    
+    /* Enhanced profile image with artistic border */
+    .profile-frame {
+      position: relative;
+      border-radius: 50%;
+      padding: 8px;
+      background: linear-gradient(135deg, #e9970a, #008cff, #9333ea);
+      animation: rotate 10s linear infinite;
+      box-shadow: 0 0 20px rgba(233, 151, 10, 0.3);
+    }
+    
+    @keyframes rotate {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+    
+    .profile-frame::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(135deg, #e9970a, #008cff, #9333ea);
+      border-radius: 50%;
+      z-index: -1;
+      filter: blur(10px);
+      opacity: 0.7;
+    }
+    
+    /* Enhanced section headers */
+    .section-header {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 1.5rem;
+    }
+    
+    .section-header::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #e9970a, transparent);
+    }
+    
+    /* Floating animation for cards */
+    .float-card {
+      animation: float-card 6s ease-in-out infinite;
+    }
+    
+    @keyframes float-card {
+      0% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+      100% {
+        transform: translateY(0px);
+      }
+    }
+    
+    /* Typewriter effect for welcome text */
+    .typewriter {
+      overflow: hidden;
+      border-right: 2px solid #e9970a;
+      white-space: nowrap;
+      margin: 0 auto;
+      animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+    }
+    
+    @keyframes typing {
+      from { width: 0 }
+      to { width: 100% }
+    }
+    
+    @keyframes blink-caret {
+      from, to { border-color: transparent }
+      50% { border-color: #e9970a }
+    }
+  </style>
+</head>
+<body class="antialiased">
+  <!-- Enhanced background elements -->
+  <div class="bg-artist">
+    <div class="bg-paint-stroke"></div>
+    <div class="bg-paint-stroke"></div>
+    <div class="bg-paint-stroke"></div>
+    <div class="bg-code-pattern"></div>
+  </div>
+  
+  <div class="min-h-screen container mx-auto p-6 md:p-12 relative z-10">
+    <!-- HERO -->
+    <header class="grid grid-cols-14 gap-6 items-start">
+      <!-- Top-left welcome + quote + tags -->
+      <div class="col-span-12 lg:col-span-9 space-y-6">
+        <div class="flex justify-between items-start">
+          <div>
+            <h2 class="text-4xl md:text-6xl font-bold mt-5 algerian typewriter" id="welcomeText">Welcome</h2>
+            <p class="text-md text-[var(--muted)] mt-6">— Explore my world: art, words, code, and consulting.</p>
+          </div>
+
+          <!-- profile pic top-right on large screens -->
+          <div class="hidden lg:block">
+            <div class="profile-frame">
+              <img id="profilePic" src="./images/gallery/adi profile.jpeg" alt="profile" class="w-40 h-40 object-cover rounded-full" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Quote (Algerian-style) with Glow Effect -->
+        <blockquote class="glass p-4 rounded-lg border-l-4 border-[var(--accent)] text-2xl algerian quote-glow float-card">
+          "शागिर्द-ए-सिकंदर महान का विश्वभूषण यलगार-ए-समशीर है।"
+        </blockquote>
+
+        <!-- Role tags with Glow Effect -->
+        <div class="flex flex-wrap gap-3">
+          <button class="role-btn-glow px-4 py-2 rounded-full trans" data-role="artist">Artist</button>
+          <button class="role-btn-glow px-4 py-2 rounded-full trans" data-role="writer">Writer</button>
+          <button class="role-btn-glow px-4 py-2 rounded-full trans" data-role="developer">Developer</button>
+          <button class="role-btn-glow px-4 py-2 rounded-full trans" data-role="consultant">Consultant</button>
+        </div>
+
+        <!-- Social icons with Glow Effect -->
+        <div class="flex items-center gap-4 mt-3">
+          <!-- WhatsApp -->
+          <a href="https://wa.me/qr/K4MH5XXACATIB1" target="_blank" class="trans p-2 rounded-full glass social-glow" aria-label="WhatsApp">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 11.5a8.38 8.38 0 0 1-1.451 4.619L21 21l-4.9-1.262A8.5 8.5 0 1 1 21 11.5z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <!-- Instagram -->
+          <a href="https://www.instagram.com/kshepnastra.22?igsh=YW82aHA0dTg1ZWlm&utm_source=qr" target="_blank" class="trans p-2 rounded-full glass social-glow" aria-label="Instagram">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="5" ry="5" stroke-width="1.5"/><path d="M16 11.37A4 4 0 1 1 12.63 8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <!-- LinkedIn -->
+          <a href="https://www.linkedin.com/in/aditya-janrao-2579542b9" target="_blank" class="trans p-2 rounded-full glass social-glow" aria-label="LinkedIn">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 8a6 6 0 0 1 6 6v6h-4v-6a2 2 0 0 0-2-2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="2" y="9" width="4" height="12" stroke-width="1.5"/><circle cx="4" cy="4" r="2" stroke-width="1.5"/></svg>
+          </a>
+          <!-- Facebook -->
+          <a href="https://www.facebook.com/share/1DG8smPdhi/?mibextid=wwXIfr" target="_blank" class="trans p-2 rounded-full glass social-glow" aria-label="Facebook">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 2h-3a4 4 0 0 0-4 4v3H8v4h3v8h4v-8h3l1-4h-4V6a1 1 0 0 1 1-1h3z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+
+       
+      <!-- Profile photo for mobile -->
+      <div class="col-span-12 lg:hidden flex flex-col items-center justify-center mt-6">
+        <div class="profile-frame">
+          <img id="profilePic" src="./images/gallery/adi profile.jpeg" alt="profile" class="w-40 h-40 object-cover rounded-full" />
+        </div>
+      </div>
+    </header>
+
+    <!-- EXPLORE / FEED -->
+    <main id="explore" class="mt-12">
+      <div class="glass p-6 rounded-lg float-card">
+        <div class="flex items-center justify-between">
+          <h3 class="text-2xl font-semibold section-header">Explore Feed</h3>
+          <div class="text-sm text-[var(--muted)]">Showing: <span id="activeRoleLabel">All</span></div>
+        </div>
+
+        <!-- Filters with Glow Effect -->
+        <div class="mt-4 flex gap-3 flex-wrap">
+          <button class="filter-btn-glow px-3 py-1 rounded trans" data-role="all">All</button>
+          <button class="filter-btn-glow px-3 py-1 rounded trans" data-role="artist">Artist</button>
+          <button class="filter-btn-glow px-3 py-1 rounded trans" data-role="writer">Writer</button>
+          <button class="filter-btn-glow px-3 py-1 rounded trans" data-role="developer">Developer</button>
+          <button class="filter-btn-glow px-3 py-1 rounded trans" data-role="consultant">Consultant</button>
+        </div>
+
+        <!-- Feed grid -->
+        <div id="feed" class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+
+        <!-- Pagination note -->
+        <div class="mt-6 text-xs text-[var(--muted)]">Tip: This is a static demo. Replace sample items with your real work in the <code>data</code> block inside the JS below.</div>
+      </div>
+
+      <!-- COMMENTS & CONTACT FORM -->
+      <section class="mt-6 grid md:grid-cols-2 gap-6">
+        <div class="glass p-4 rounded-lg float-card">
+          <h4 class="font-semibold section-header">Feedback & Comments</h4>
+          <div class="mt-3">
+            <div class="mb-2 text-sm text-[var(--muted)]">Public feedback (visible to you)</div>
+            <div class="space-y-3 scrollbar" id="commentsList"></div>
+            <div class="mt-3 grid grid-cols-1 gap-2">
+              <input id="cName" class="p-2 rounded bg-transparent border" placeholder="Your name (optional)" />
+              <textarea id="cText" class="p-2 rounded bg-transparent border" placeholder="Write a comment..."></textarea>
+              <div class="flex gap-2">
+                <button id="postComment" class="glow-button px-4 py-2 rounded font-semibold">Post Comment</button>
+                <button id="clearComments" class="px-4 py-2 rounded border">Clear</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="contact-form" class="glass p-4 rounded-lg float-card">
+          <h4 class="font-semibold section-header">Contact / Quick Message</h4>
+          <div class="mt-3 text-sm text-[var(--muted)]">Send a quick message (this demo stores locally only)</div>
+          <div class="mt-3 grid gap-2">
+            <input id="msgName" class="p-2 rounded bg-transparent border" placeholder="Your name" />
+            <input id="msgEmail" class="p-2 rounded bg-transparent border" placeholder="Your email" />
+            <textarea id="msgBody" class="p-2 rounded bg-transparent border" placeholder="Your message"></textarea>
+            <div class="flex gap-2">
+              <button id="sendMsg" class="glow-button px-4 py-2 rounded">Send</button>
+              <button id="resetMsg" class="px-4 py-2 rounded border">Reset</button>
+            </div>
+            <div id="msgStatus" class="text-sm text-[var(--muted)]"></div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- CONTACT SECTION AT BOTTOM -->
+    <section class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="glass p-4 rounded-lg float-card">
+        <h4 class="font-semibold section-header">Contact</h4>
+        <p class="text-sm text-[var(--muted)] mt-2">Call or email for bookings, commissions and projects.</p>
+        <div class="mt-3">
+          <div class="text-xs opacity-70">Phone</div>
+          <div class="font-medium">+91 7499032210</div>
+          <div class="text-xs opacity-70 mt-2">Email</div>
+          <div class="font-medium">vishwajan2204@gmail.com</div>
+        </div>
+      </div>
+
+      <div class="glass p-4 rounded-lg float-card">
+        <h4 class="font-semibold section-header">Quick Links</h4>
+        <ul class="mt-2 text-sm text-[var(--muted)] space-y-2">
+          <li><a href="#explore" class="underline">Explore Gallery</a></li>
+          <li><a href="#contact-form" class="underline">Send a message</a></li>
+          <li><a href="#" class="underline">Download CV</a></li>
+        </ul>
+      </div>
+    </section>
+
+    <footer class="mt-12 text-center text-sm text-[var(--muted)]">© 2025 — VISHWABHUSHAN  — Built with Tailwind • Static Demo</footer>
+  </div>
+
+  <!-- Popup for explore items -->
+  <div class="popup-overlay" id="itemPopup">
+    <div class="popup-content">
+      <button class="close-popup" id="closePopup">&times;</button>
+      <div id="popupContent"></div>
+    </div>
+  </div>
+
+  <script>
+    // ======== SAMPLE DATA (replace with your real items) ========
+    const data = {
+  artist: [
+    { id: 'a1', title: 'Acrylic Dawn', image: 'https://images.unsplash.com/photo-1541961017774-22349e4a1262?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80', likes: 12, comments: ['Beautiful!'] },
+    { id: 'a2', title: 'Study in Ochre', image: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80', likes: 6, comments: [] },
+  ],
+  writer: [
+  {
+  id: 'w1',
+  title: 'आख़िरी मोहब्बत ❤️‍🩹',
+  text: `मेरे वजूद-ए-ज़िंदगी
+वीराने मदीनों में कटती रही
+निगाहें मेरी मोम बन गईं
+उसमें उसकी फरामोशी तपस सी लगती रही।
+
+
+                                -विश्‍वभुषण`,
+  likes: 5,
+  comments: ['Deep lines.']
+},
+    { 
+      id: 'w2', 
+      title: 'Short Poem', 
+      text: 'raat ki baat, chand ki muhabbat', 
+      likes: 3, 
+      comments: [] 
+    }
+  ],
+  developer: [
+    { id: 'd1', title: 'Takshaka UI', text: 'Chat UI with neural canvas.', link: '#', likes: 22, comments: ['Awesome build!'] },
+    { id: 'd2', title: 'License Dashboard', text: 'React + Chart.js', link: '#', likes: 8, comments: [] },
+  ],
+  consultant: [
+    { id: 'c1', title: 'Web Architect', text: 'Frontend architecture & APIs', likes: 2, comments: [] }
+  ]
+};
+
+    // ======== Local Storage for likes/comments/messages ========
+    const LS_KEY = 'portfolio_demo_state_v1';
+    const saved = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+    const state = {
+      likes: saved.likes || {},
+      comments: saved.comments || [],
+      messages: saved.messages || []
+    };
+
+    function saveState(){
+      localStorage.setItem(LS_KEY, JSON.stringify(state));
+    }
+
+    // ======== Time-based welcome message ========
+    function updateWelcomeMessage() {
+      const hour = new Date().getHours();
+      let greeting;
+      
+      if (hour < 12) {
+        greeting = "Good Morning";
+      } else if (hour < 17) {
+        greeting = "Good Afternoon";
+      } else if (hour < 21) {
+        greeting = "Good Evening";
+      } else {
+        greeting = "Good Night";
+      }
+      
+      document.getElementById('welcomeText').textContent = greeting;
+    }
+    
+    // Call on page load
+    updateWelcomeMessage();
+
+    // ======== Popup functionality ========
+    const popup = document.getElementById('itemPopup');
+    const popupContent = document.getElementById('popupContent');
+    const closePopup = document.getElementById('closePopup');
+    
+    function openPopup(item) {
+      let content = `
+        <div class="flex flex-col gap-4">
+          <div class="flex items-start gap-4">
+            <div class="flex-1">
+              <div class="text-sm opacity-70">${item._role.toUpperCase()}</div>
+              <div class="font-semibold text-2xl">${item.title}</div>
+              ${item.text ? `<p class="mt-3 text-[var(--muted)]">${item.text}</p>` : ''}
+              ${item.link ? `<a href="${item.link}" target="_blank" class="underline text-sm mt-2 inline-block">Open project</a>` : ''}
+            </div>
+            ${item.image ? `<img src="${item.image}" alt="${item.title}" class="w-36 h-28 object-cover rounded"/>` : ''}
+          </div>
+          
+          <div class="flex items-center gap-3 mt-4">
+            <button class="like-btn-popup px-3 py-1 rounded border">Like <span data-id="${item.id}">(${state.likes[item.id] || item.likes || 0})</span></button>
+          </div>
+          
+          <div class="mt-4">
+            <h5 class="font-semibold mb-2">Comments</h5>
+            <div class="existing-comments space-y-2 mb-4 max-h-40 overflow-y-auto"></div>
+            <div class="grid gap-2">
+              <input class="cname-popup p-2 rounded bg-transparent border w-full" placeholder="Name (optional)" />
+              <textarea class="ctext-popup p-2 rounded bg-transparent border w-full" placeholder="Write comment..."></textarea>
+              <div class="flex gap-2">
+                <button class="post-c-popup px-3 py-1 rounded bg-[var(--accent)] text-black">Post Comment</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      popupContent.innerHTML = content;
+      popup.classList.add('active');
+      
+      // Set up event handlers for popup elements
+      const likeBtn = popupContent.querySelector('.like-btn-popup');
+      const likeCountSpan = likeBtn.querySelector('span');
+      likeBtn.addEventListener('click', () => {
+        state.likes[item.id] = (state.likes[item.id] || item.likes || 0) + 1;
+        likeCountSpan.textContent = `(${state.likes[item.id]})`;
+        saveState();
+        // Update the feed item as well
+        updateFeedItemLikes(item.id, state.likes[item.id]);
+      });
+      
+      const existingComments = popupContent.querySelector('.existing-comments');
+      function refreshPopupComments() {
+        existingComments.innerHTML = '';
+        const fromStatic = item.comments || [];
+        fromStatic.forEach(c => {
+          const el = document.createElement('div');
+          el.className = 'p-2 bg-[rgba(255,255,255,0.02)] rounded';
+          el.textContent = c;
+          existingComments.appendChild(el);
+        });
+        state.comments.filter(c => c.itemId === item.id).forEach(c => {
+          const el = document.createElement('div');
+          el.className = 'p-2 bg-[rgba(255,255,255,0.02)] rounded';
+          el.innerHTML = `<strong>${escapeHtml(c.name || 'Anon')}:</strong> ${escapeHtml(c.text)}`;
+          existingComments.appendChild(el);
+        });
+      }
+      refreshPopupComments();
+      
+      const postBtn = popupContent.querySelector('.post-c-popup');
+      postBtn.addEventListener('click', () => {
+        const name = popupContent.querySelector('.cname-popup').value;
+        const text = popupContent.querySelector('.ctext-popup').value;
+        if (!text.trim()) return alert('Write something first');
+        state.comments.push({ itemId: item.id, name: name.trim() || 'Anonymous', text: text.trim(), createdAt: new Date().toISOString() });
+        popupContent.querySelector('.cname-popup').value = '';
+        popupContent.querySelector('.ctext-popup').value = '';
+        refreshPopupComments();
+        refreshCommentsPanel();
+        saveState();
+      });
+    }
+    
+    function closePopupHandler() {
+      popup.classList.remove('active');
+    }
+    
+    closePopup.addEventListener('click', closePopupHandler);
+    popup.addEventListener('click', function(e) {
+      if (e.target === popup) {
+        closePopupHandler();
+      }
+    });
+    
+    // Update feed item likes when changed in popup
+    function updateFeedItemLikes(itemId, count) {
+      const likeSpans = document.querySelectorAll(`.like-btn span[data-id="${itemId}"]`);
+      likeSpans.forEach(span => {
+        span.textContent = `(${count})`;
+      });
+    }
+
+    // ======== Render Feed ========
+    const feedEl = document.getElementById('feed');
+    const activeLabel = document.getElementById('activeRoleLabel');
+
+    function renderFeed(role='all'){
+      feedEl.innerHTML = '';
+      activeLabel.textContent = role === 'all' ? 'All' : role.charAt(0).toUpperCase()+role.slice(1);
+
+      const rows = [];
+      if(role==='all' || role==='artist') rows.push(...data.artist.map(i => ({...i, _role:'artist'})));
+      if(role==='all' || role==='writer') rows.push(...data.writer.map(i => ({...i, _role:'writer'})));
+      if(role==='all' || role==='developer') rows.push(...data.developer.map(i => ({...i, _role:'developer'})));
+      if(role==='all' || role==='consultant') rows.push(...data.consultant.map(i => ({...i, _role:'consultant'})));
+
+      rows.forEach(item => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'bg-[rgba(255,255,255,0.02)] p-4 rounded-lg cursor-pointer float-card';
+        wrapper.addEventListener('click', () => openPopup(item));
+
+        let inner = `
+          <div class="flex flex-col gap-3">
+            <div class="flex items-start gap-3">
+              <div class="flex-1">
+                <div class="text-sm opacity-70">${item._role.toUpperCase()}</div>
+                <div class="font-semibold text-lg">${item.title}</div>
+                ${item.text ? `<p class="mt-2 text-[var(--muted)]">${item.text}</p>` : ''}
+                ${item.link ? `<a href="${item.link}" target="_blank" class="underline text-sm mt-2">Open project</a>` : ''}
+              </div>
+              ${item.image ? `<img src="${item.image}" alt="${item.title}" class="w-28 h-20 object-cover rounded"/>` : ''}
+            </div>
+            <div class="flex items-center gap-3">
+              <button class="like-btn px-3 py-1 rounded border">Like <span data-id="${item.id}">(${state.likes[item.id] || item.likes || 0})</span></button>
+              <button class="comment-toggle px-3 py-1 rounded border">Comments (${(state.comments.filter(c=>c.itemId===item.id).length + (item.comments?item.comments.length:0))})</button>
+            </div>
+            <div class="comment-area hidden mt-2 p-2 border rounded">
+              <div class="existing space-y-2 mb-2"></div>
+              <input class="cname p-2 rounded bg-transparent border w-full mb-2" placeholder="Name (optional)" />
+              <textarea class="ctext p-2 rounded bg-transparent border w-full mb-2" placeholder="Write comment..."></textarea>
+              <div class="flex gap-2">
+                <button class="post-c px-3 py-1 rounded bg-[var(--accent)] text-black">Post</button>
+              </div>
+            </div>
+          </div>
+        `;
+
+        wrapper.innerHTML = inner;
+        // attach handlers
+        feedEl.appendChild(wrapper);
+
+        const likeBtn = wrapper.querySelector('.like-btn');
+        const likeCountSpan = likeBtn.querySelector('span');
+        likeBtn.addEventListener('click', (e)=>{
+          e.stopPropagation(); // Prevent opening popup when clicking like
+          state.likes[item.id] = (state.likes[item.id] || item.likes || 0) + 1;
+          likeCountSpan.textContent = `(${state.likes[item.id]})`;
+          saveState();
+        });
+
+        const commentToggle = wrapper.querySelector('.comment-toggle');
+        const commentArea = wrapper.querySelector('.comment-area');
+        const existing = wrapper.querySelector('.existing');
+        function refreshExisting(){
+          existing.innerHTML = '';
+          const fromStatic = item.comments || [];
+          fromStatic.forEach(c => {
+            const el = document.createElement('div');
+            el.className = 'p-2 bg-[rgba(255,255,255,0.02)] rounded';
+            el.textContent = c;
+            existing.appendChild(el);
+          });
+          state.comments.filter(c=>c.itemId===item.id).forEach(c=>{
+            const el = document.createElement('div');
+            el.className = 'p-2 bg-[rgba(255,255,255,0.02)] rounded';
+            el.innerHTML = `<strong>${escapeHtml(c.name||'Anon')}:</strong> ${escapeHtml(c.text)}`;
+            existing.appendChild(el);
+          });
+        }
+        refreshExisting();
+        commentToggle.addEventListener('click', (e)=>{
+          e.stopPropagation(); // Prevent opening popup when clicking comments
+          commentArea.classList.toggle('hidden');
+        });
+
+        const postBtn = wrapper.querySelector('.post-c');
+        postBtn.addEventListener('click', (e)=>{
+          e.stopPropagation(); // Prevent opening popup when clicking post
+          const name = wrapper.querySelector('.cname').value;
+          const text = wrapper.querySelector('.ctext').value;
+          if(!text.trim()) return alert('Write something first');
+          state.comments.push({ itemId: item.id, name: name.trim()||'Anonymous', text: text.trim(), createdAt: new Date().toISOString() });
+          wrapper.querySelector('.cname').value='';
+          wrapper.querySelector('.ctext').value='';
+          refreshExisting();
+          refreshCommentsPanel();
+          saveState();
+        });
+      });
+    }
+
+    function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
+
+    // initial render
+    renderFeed('all');
+
+    // hook filter buttons
+    document.querySelectorAll('.filter-btn-glow').forEach(btn=>btn.addEventListener('click', ()=>{
+      const role = btn.dataset.role; renderFeed(role); document.getElementById('activeRoleLabel').textContent = role==='all'?'All':role.charAt(0).toUpperCase()+role.slice(1);
+      window.location.hash = '#explore';
+    }));
+
+    // top role tags
+    document.querySelectorAll('.role-btn-glow').forEach(btn=>btn.addEventListener('click', ()=>{
+      const r = btn.dataset.role; renderFeed(r); document.getElementById('activeRoleLabel').textContent = r.charAt(0).toUpperCase()+r.slice(1); window.location.hash = '#explore';
+    }));
+
+    // Comments & contact form handlers
+    const commentsList = document.getElementById('commentsList');
+    function refreshCommentsPanel(){
+      commentsList.innerHTML = '';
+      // show state.comments
+      state.comments.forEach(c=>{
+        const el = document.createElement('div');
+        el.className = 'p-2 bg-[rgba(255,255,255,0.02)] rounded';
+        el.innerHTML = `<div class="flex items-center justify-between"><strong>${escapeHtml(c.name||'Anon')}</strong><span class="text-xs opacity-70">${new Date(c.createdAt).toLocaleString()}</span></div><div class="mt-1 text-sm">${escapeHtml(c.text)}</div>`;
+        commentsList.appendChild(el);
+      });
+    }
+    refreshCommentsPanel();
+
+    document.getElementById('postComment').addEventListener('click', ()=>{
+      const name = document.getElementById('cName').value;
+      const text = document.getElementById('cText').value;
+      if(!text.trim()) return alert('Write a comment first');
+      state.comments.unshift({ itemId: null, name: name.trim()||'Anonymous', text: text.trim(), createdAt: new Date().toISOString() });
+      document.getElementById('cName').value=''; document.getElementById('cText').value='';
+      refreshCommentsPanel(); saveState();
+    });
+
+    document.getElementById('clearComments').addEventListener('click', ()=>{ if(confirm('Clear all stored comments?')){ state.comments=[]; saveState(); refreshCommentsPanel(); } });
+
+    // contact message handlers
+    document.getElementById('sendMsg').addEventListener('click', ()=>{
+      const n = document.getElementById('msgName').value.trim();
+      const e = document.getElementById('msgEmail').value.trim();
+      const b = document.getElementById('msgBody').value.trim();
+      if(!b) return alert('Write a message');
+      state.messages.push({name:n,email:e,body:b,createdAt:new Date().toISOString()});
+      saveState();
+      document.getElementById('msgStatus').textContent = 'Message saved locally. Replace with server API to send.';
+      setTimeout(()=>document.getElementById('msgStatus').textContent='',3000);
+      document.getElementById('msgName').value=''; document.getElementById('msgEmail').value=''; document.getElementById('msgBody').value='';
+    });
+    document.getElementById('resetMsg').addEventListener('click', ()=>{ document.getElementById('msgName').value=''; document.getElementById('msgEmail').value=''; document.getElementById('msgBody').value=''; });
+
+    // load saved likes into UI counts
+    (function hydrateLikes(){
+      // when render happens likes are shown via state; re-render to update
+      renderFeed('all');
+    })();
+
+  </script>
+</body>
+</html>
