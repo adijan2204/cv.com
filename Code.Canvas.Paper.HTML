@@ -1,0 +1,686 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CodeCanvasPaper</title>
+  <meta name="description" content="Artist • Writer • Developer • Consultant — Personal Portfolio" />
+  
+  <!-- Tailwind Play CDN for quick prototype -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="styles.css">
+  <!-- External CSS -->
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --text: #f5f5f5;
+      --muted: #a0a0a0;
+      --accent: #f59e0b;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .algerian {
+      font-family: 'Algerian', 'Times New Roman', serif;
+    }
+
+    .glass {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .float-card {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease;
+    }
+
+    .float-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .trans {
+      transition: all 0.3s ease;
+    }
+
+    .role-btn-glow, .filter-btn-glow, .social-glow {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .role-btn-glow::before, .filter-btn-glow::before, .social-glow::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .role-btn-glow:hover::before, .filter-btn-glow:hover::before, .social-glow:hover::before {
+      left: 100%;
+    }
+
+    .role-btn-glow {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: var(--accent);
+    }
+
+    .role-btn-glow:hover {
+      background: rgba(245, 158, 11, 0.2);
+    }
+
+    .filter-btn-glow {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .filter-btn-glow:hover, .filter-btn-glow.active {
+      background: rgba(245, 158, 11, 0.1);
+      border-color: rgba(245, 158, 11, 0.3);
+      color: var(--accent);
+    }
+
+    .social-glow {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .social-glow:hover {
+      background: rgba(245, 158, 11, 0.1);
+      border-color: rgba(245, 158, 11, 0.3);
+      color: var(--accent);
+    }
+
+    .quote-glow {
+      text-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+    }
+
+    .profile-frame {
+      border: 2px solid rgba(245, 158, 11, 0.5);
+      border-radius: 50%;
+      padding: 4px;
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .glow-button {
+      background: linear-gradient(45deg, #f59e0b, #fbbf24);
+      color: #000;
+      font-weight: bold;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glow-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      transition: left 0.5s;
+    }
+
+    .glow-button:hover::before {
+      left: 100%;
+    }
+
+    .section-header {
+      position: relative;
+      display: inline-block;
+    }
+
+    .section-header::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+
+    .scrollbar {
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .scrollbar::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(245, 158, 11, 0.5);
+      border-radius: 10px;
+    }
+
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .popup-content {
+      background: var(--bg);
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 90%;
+      max-height: 90%;
+      overflow-y: auto;
+      position: relative;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .close-popup {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 24px;
+      background: none;
+      border: none;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .typewriter {
+      overflow: hidden;
+      border-right: 2px solid var(--accent);
+      white-space: nowrap;
+      animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+    }
+
+    @keyframes typing {
+      from { width: 0 }
+      to { width: 100% }
+    }
+
+    @keyframes blink-caret {
+      from, to { border-color: transparent }
+      50% { border-color: var(--accent) }
+    }
+
+    .bg-artist {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .bg-paint-stroke {
+      position: absolute;
+      width: 200%;
+      height: 100px;
+      background: rgba(245, 158, 11, 0.03);
+      transform: rotate(-15deg);
+      top: 20%;
+      left: -50%;
+    }
+
+    .bg-paint-stroke:nth-child(2) {
+      top: 50%;
+      background: rgba(245, 158, 11, 0.02);
+      transform: rotate(10deg);
+    }
+
+    .bg-paint-stroke:nth-child(3) {
+      top: 80%;
+      background: rgba(245, 158, 11, 0.04);
+      transform: rotate(-5deg);
+    }
+
+    .bg-code-pattern {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(circle at 25% 25%, rgba(245, 158, 11, 0.05) 2px, transparent 2px),
+        radial-gradient(circle at 75% 75%, rgba(245, 158, 11, 0.05) 2px, transparent 2px);
+      background-size: 50px 50px;
+    }
+
+    /* Mobile-specific adjustments */
+    @media (max-width: 768px) {
+      .mobile-header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+      }
+      
+      .mobile-welcome {
+        flex: 1;
+      }
+      
+      .mobile-profile {
+        flex-shrink: 0;
+        margin-left: 1rem;
+      }
+    }
+  </style>
+</head>
+<body class="antialiased">
+  <!-- Enhanced background elements -->
+  <div class="bg-artist">
+    <div class="bg-paint-stroke"></div>
+    <div class="bg-paint-stroke"></div>
+    <div class="bg-paint-stroke"></div>
+    <div class="bg-code-pattern"></div>
+  </div>
+  
+  <div class="min-h-screen container mx-auto p-6 md:p-12 relative z-10">
+    <!-- HERO -->
+    <header class="grid grid-cols-1 lg:grid-cols-14 gap-6 items-start">
+      <!-- Top-left welcome + quote + tags -->
+      <div class="col-span-12 lg:col-span-9 space-y-6">
+        <!-- Mobile header row with welcome and profile photo -->
+        <div class="mobile-header-row lg:flex lg:justify-between lg:items-start">
+          <div class="mobile-welcome">
+            <h2 class="text-5xl md:text-6xl font-bold mt-5 algerian typewriter" id="welcomeText">Welcome</h2>
+            <p class="text-lg text-[var(--muted)] mt-6">— Explore my world: art, words, code, and consulting.</p>
+          </div>
+
+          <!-- Profile photo - visible on both mobile and desktop -->
+          <div class="mobile-profile">
+            <div class="profile-frame">
+              <img id="profilePic" src="./IMAGES/MAIN.jpeg" alt="profile" class="w-24 h-24 lg:w-40 lg:h-40 object-cover rounded-full" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Quote (Algerian-style) with Glow Effect -->
+        <blockquote class="glass p-4 rounded-lg border-l-4 border-[var(--accent)] text-l lg:text-3xl algerian quote-glow float-card">
+          "शागिर्द-ए-सिकंदर महान का विश्‍वभुषण यलगार-ए-समशीर है।"
+        </blockquote>
+
+        <!-- Role tags with Glow Effect -->
+        <div class="flex flex-wrap gap-3">
+          <button class="role-btn-glow px-4 py-2 rounded-full trans" data-role="artist">Artist</button>
+          <button class="role-btn-glow px-4 py-2 rounded-full trans" data-role="writer">Writer</button>
+          <button class="role-btn-glow px-4 py-2 rounded-full trans" data-role="developer">Developer</button>
+          <button class="role-btn-glow px-4 py-2 rounded-full trans" data-role="consultant">Consultant</button>
+        </div>
+
+        <!-- Social icons with Glow Effect -->
+        <div class="flex items-center gap-4 mt-3">
+          <!-- WhatsApp -->
+          <a href="https://wa.me/qr/K4MH5XXACATIB1" target="_blank" class="trans p-2 rounded-full glass social-glow" aria-label="WhatsApp">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 11.5a8.38 8.38 0 0 1-1.451 4.619L21 21l-4.9-1.262A8.5 8.5 0 1 1 21 11.5z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <!-- Instagram -->
+          <a href="https://www.instagram.com/kshepnastra.22?igsh=YW82aHA0dTg1ZWlm&utm_source=qr" target="_blank" class="trans p-2 rounded-full glass social-glow" aria-label="Instagram">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="5" ry="5" stroke-width="1.5"/><path d="M16 11.37A4 4 0 1 1 12.63 8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <!-- LinkedIn -->
+          <a href="https://www.linkedin.com/in/aditya-janrao-2579542b9" target="_blank" class="trans p-2 rounded-full glass social-glow" aria-label="LinkedIn">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 8a6 6 0 0 1 6 6v6h-4v-6a2 2 0 0 0-2-2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="2" y="9" width="4" height="12" stroke-width="1.5"/><circle cx="4" cy="4" r="2" stroke-width="1.5"/></svg>
+          </a>
+          <!-- Facebook -->
+          <a href="https://www.facebook.com/share/1DG8smPdhi/?mibextid=wwXIfr" target="_blank" class="trans p-2 rounded-full glass social-glow" aria-label="Facebook">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 2h-3a4 4 0 0 0-4 4v3H8v4h3v8h4v-8h3l1-4h-4V6a1 1 0 0 1 1-1h3z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Profile photo for desktop (already included above) -->
+    </header>
+
+    <!-- EXPLORE / FEED -->
+    <main id="explore" class="mt-12">
+      <div class="glass p-6 rounded-lg float-card">
+        <div class="flex items-center justify-between">
+          <h3 class="text-2xl font-semibold section-header">Explore Feed</h3>
+          <div class="text-sm text-[var(--muted)]">Showing: <span id="activeRoleLabel">All</span></div>
+        </div>
+
+        <!-- Filters with Glow Effect -->
+        <div class="mt-4 flex gap-3 flex-wrap">
+          <button class="filter-btn-glow px-3 py-1 rounded trans active" data-role="all">All</button>
+          <button class="filter-btn-glow px-3 py-1 rounded trans" data-role="artist">Artist</button>
+          <button class="filter-btn-glow px-3 py-1 rounded trans" data-role="writer">Writer</button>
+          <button class="filter-btn-glow px-3 py-1 rounded trans" data-role="developer">Developer</button>
+          <button class="filter-btn-glow px-3 py-1 rounded trans" data-role="consultant">Consultant</button>
+        </div>
+
+        <!-- Feed grid -->
+        <div id="feed" class="mt-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <!-- Feed items will be populated by JavaScript -->
+        </div>
+
+        <!-- Load More Button -->
+        <div id="loadMoreContainer" class="mt-6 text-center hidden">
+          <button id="loadMoreBtn" class="glow-button px-6 py-2 rounded font-semibold">Load More</button>
+        </div>
+
+        <!-- Pagination note -->
+        <div class="mt-6 text-xs text-[var(--muted)]">Tip: Click on any image to view it in full size</div>
+      </div>
+
+      <!-- COMMENTS & CONTACT FORM -->
+      <section class="mt-6 grid md:grid-cols-2 gap-6">
+        <div class="glass p-4 rounded-lg float-card">
+          <h4 class="font-semibold section-header">Feedback & Comments</h4>
+          <div class="mt-3">
+            <div class="mb-2 text-sm text-[var(--muted)]">Public feedback (visible to you)</div>
+            <div class="space-y-3 scrollbar" id="commentsList">
+              <div class="p-3 bg-white/5 rounded">
+                <div class="font-medium">Alex Johnson</div>
+                <div class="text-sm">Amazing portfolio! Love your art style.</div>
+              </div>
+              <div class="p-3 bg-white/5 rounded">
+                <div class="font-medium">Sarah Miller</div>
+                <div class="text-sm">Your writing is so inspiring!</div>
+              </div>
+            </div>
+            <div class="mt-3 grid grid-cols-1 gap-2">
+              <input id="cName" class="p-2 rounded bg-transparent border border-white/20" placeholder="Your name (optional)" />
+              <textarea id="cText" class="p-2 rounded bg-transparent border border-white/20" placeholder="Write a comment..."></textarea>
+              <div class="flex gap-2">
+                <button id="postComment" class="glow-button px-4 py-2 rounded font-semibold">Post Comment</button>
+                <button id="clearComments" class="px-4 py-2 rounded border border-white/20">Clear</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="contact-form" class="glass p-4 rounded-lg float-card">
+          <h4 class="font-semibold section-header">Contact / Quick Message</h4>
+          <div class="mt-3 text-sm text-[var(--muted)]">Send a quick message (this demo stores locally only)</div>
+          <div class="mt-3 grid gap-2">
+            <input id="msgName" class="p-2 rounded bg-transparent border border-white/20" placeholder="Your name" />
+            <input id="msgEmail" class="p-2 rounded bg-transparent border border-white/20" placeholder="Your email" />
+            <textarea id="msgBody" class="p-2 rounded bg-transparent border border-white/20" placeholder="Your message"></textarea>
+            <div class="flex gap-2">
+              <button id="sendMsg" class="glow-button px-4 py-2 rounded">Send</button>
+              <button id="resetMsg" class="px-4 py-2 rounded border border-white/20">Reset</button>
+            </div>
+            <div id="msgStatus" class="text-sm text-[var(--muted)]"></div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- CONTACT SECTION AT BOTTOM -->
+    <section class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="glass p-4 rounded-lg float-card">
+        <h4 class="font-semibold section-header">Contact</h4>
+        <p class="text-sm text-[var(--muted)] mt-2">Call or email for bookings, commissions and projects.</p>
+        <div class="mt-3">
+          <div class="text-xs opacity-70">Phone</div>
+          <div class="font-medium">+91 7499032210</div>
+          <div class="text-xs opacity-70 mt-2">Email</div>
+          <div class="font-medium">vishwajan2204@gmail.com</div>
+        </div>
+      </div>
+
+      <div class="glass p-4 rounded-lg float-card">
+        <h4 class="font-semibold section-header">Quick Links</h4>
+        <ul class="mt-2 text-sm text-[var(--muted)] space-y-2">
+          <li><a href="#explore" class="underline">Explore Gallery</a></li>
+          <li><a href="#contact-form" class="underline">Send a message</a></li>
+          <li><a href="#" class="underline">Download CV</a></li>
+        </ul>
+      </div>
+    </section>
+
+    <footer class="mt-12 text-center text-sm text-[var(--muted)]">© 2025 — VISHWABHUSHAN  — Built with Tailwind • Static Demo</footer>
+  </div>
+
+  <!-- Popup for explore items -->
+  <div class="popup-overlay" id="itemPopup">
+    <div class="popup-content">
+      <button class="close-popup" id="closePopup">&times;</button>
+      <div id="popupContent" class="flex justify-center items-center">
+        <img id="popupImage" src="" alt="" class="max-w-full max-h-full object-contain">
+      </div>
+    </div>
+  </div>
+
+  <!-- Component Scripts -->
+  <script>
+   
+
+    // ======== Feed Manager ========
+    class FeedManager {
+      constructor(dataManager) {
+        this.dataManager = dataManager;
+        this.feed = document.getElementById('feed');
+        this.activeRole = 'all';
+        this.filteredItems = [];
+        this.visibleCount = 4; // Start with 4 visible items
+        this.init();
+      }
+
+      init() {
+        this.setupEventListeners();
+        this.filter('all');
+      }
+
+      setupEventListeners() {
+        // Role buttons (artist, writer, etc.)
+        document.querySelectorAll('[data-role]').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const role = e.target.getAttribute('data-role');
+            this.filter(role);
+          });
+        });
+
+        // Load more button
+        document.getElementById('loadMoreBtn').addEventListener('click', () => {
+          this.loadMore();
+        });
+      }
+
+      filter(role) {
+        this.activeRole = role;
+        this.visibleCount = 4; // Reset to 4 when filter changes
+        this.filteredItems = role === 'all' 
+          ? this.dataManager.state.feed 
+          : this.dataManager.state.feed.filter(item => item.role === role);
+
+        // Update active role label
+        document.getElementById('activeRoleLabel').textContent = role === 'all' ? 'All' : role.charAt(0).toUpperCase() + role.slice(1);
+
+        // Update active filter buttons
+        document.querySelectorAll('.filter-btn-glow').forEach(btn => {
+          btn.classList.toggle('active', btn.getAttribute('data-role') === role);
+        });
+
+        this.render();
+      }
+
+      render() {
+        this.feed.innerHTML = '';
+        const itemsToShow = this.filteredItems.slice(0, this.visibleCount);
+        
+        itemsToShow.forEach(itemData => {
+          const item = this.createFeedItem(itemData);
+          this.feed.appendChild(item);
+        });
+
+        // Show/hide load more button
+        const loadMoreContainer = document.getElementById('loadMoreContainer');
+        if (this.visibleCount < this.filteredItems.length) {
+          loadMoreContainer.classList.remove('hidden');
+        } else {
+          loadMoreContainer.classList.add('hidden');
+        }
+      }
+
+      createFeedItem(itemData) {
+        const item = document.createElement('div');
+        item.className = 'group cursor-pointer';
+        item.innerHTML = `
+          <div class="aspect-square overflow-hidden rounded-lg bg-white/5">
+            <img src="${itemData.image}" alt="${itemData.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+          </div>
+          <div class="mt-2 text-sm text-center">${itemData.title}</div>
+        `;
+
+        item.addEventListener('click', () => PopupManager.open(itemData));
+
+        return item;
+      }
+
+      loadMore() {
+        // Increase visible count by 4, but don't exceed total items
+        this.visibleCount = Math.min(this.visibleCount + 4, this.filteredItems.length);
+        this.render();
+      }
+    }
+
+    // ======== Comments Manager ========
+    class CommentsManager {
+      constructor(dataManager) {
+        this.dataManager = dataManager;
+        this.commentsList = document.getElementById('commentsList');
+        this.cName = document.getElementById('cName');
+        this.cText = document.getElementById('cText');
+        this.postComment = document.getElementById('postComment');
+        this.clearComments = document.getElementById('clearComments');
+        this.init();
+      }
+
+      init() {
+        this.setupEventListeners();
+        this.renderComments();
+      }
+
+      setupEventListeners() {
+        this.postComment.addEventListener('click', () => this.addComment());
+        this.clearComments.addEventListener('click', () => this.clearAllComments());
+      }
+
+      renderComments() {
+        this.commentsList.innerHTML = '';
+        this.dataManager.state.comments.forEach(comment => {
+          const commentEl = document.createElement('div');
+          commentEl.className = 'p-3 bg-white/5 rounded';
+          commentEl.innerHTML = `
+            <div class="font-medium">${comment.name}</div>
+            <div class="text-sm">${comment.text}</div>
+          `;
+          this.commentsList.appendChild(commentEl);
+        });
+      }
+
+      addComment() {
+        const name = this.cName.value.trim() || 'Anonymous';
+        const text = this.cText.value.trim();
+        
+        if (!text) return;
+        
+        this.dataManager.state.comments.push({ name, text });
+        this.dataManager.saveState();
+        this.renderComments();
+        
+        this.cName.value = '';
+        this.cText.value = '';
+      }
+
+      clearAllComments() {
+        this.dataManager.state.comments = [];
+        this.dataManager.saveState();
+        this.renderComments();
+      }
+    }
+
+    // ======== Message Manager ========
+    class MessageManager {
+      constructor(dataManager) {
+        this.dataManager = dataManager;
+        this.msgName = document.getElementById('msgName');
+        this.msgEmail = document.getElementById('msgEmail');
+        this.msgBody = document.getElementById('msgBody');
+        this.sendMsg = document.getElementById('sendMsg');
+        this.resetMsg = document.getElementById('resetMsg');
+        this.msgStatus = document.getElementById('msgStatus');
+        this.init();
+      }
+
+      init() {
+        this.setupEventListeners();
+      }
+
+      setupEventListeners() {
+        this.sendMsg.addEventListener('click', () => this.sendMessage());
+        this.resetMsg.addEventListener('click', () => this.resetForm());
+      }
+
+      sendMessage() {
+        const name = this.msgName.value.trim();
+        const email = this.msgEmail.value.trim();
+        const body = this.msgBody.value.trim();
+        
+        if (!name || !email || !body) {
+          this.showStatus('Please fill all fields', 'error');
+          return;
+        }
+        
+        // In a real app, you would send this to a server
+        // For demo, we'll just store locally
+        this.dataManager.state.messages.push({ name, email, body, createdAt: new Date().toISOString() });
+        this.dataManager.saveState();
+        
+        this.showStatus('Message sent successfully!', 'success');
+        this.resetForm();
+      }
+
+      resetForm() {
+        this.msgName.value = '';
+        this.msgEmail.value = '';
+        this.msgBody.value = '';
+        this.msgStatus.textContent = '';
+      }
+
+      showStatus(message, type) {
+        this.msgStatus.textContent = message;
+        this.msgStatus.className = 'text-sm';
+        
+        if (type === 'success') {
+          this.msgStatus.classList.add('text-green-400');
+        } else if (type === 'error') {
+          this.msgStatus.classList.add('text-red-400');
+        } else {
+          this.msgStatus.classList.add('text-[var(--muted)]');
+        }
+      }
+    }
+
+    // ======== Initialize App ========
+    document.addEventListener('DOMContentLoaded', () => {
+      const dataManager = new DataManager();
+      PopupManager.init();
+      new FeedManager(dataManager);
+      new CommentsManager(dataManager);
+      new MessageManager(dataManager);
+    });
+  </script>
+
+  <!-- Component Scripts -->
+  <script src="data.js"></script>
+  <script src="ui-components.js"></script>
+  <script src="popup-manager.js"></script>
+  <script src="feed-manager.js"></script>
+  <script src="comments-manager.js"></script>
+  <script src="app.js"></script>
+  <script src="bg.js"></script>
+</body>
+</html>
